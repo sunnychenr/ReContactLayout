@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fl_contact_root"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        tools:background="@android:color/darker_gray">
+
+        <ImageView
+            android:id="@+id/iv_contact_photo_big"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent" />
+
+        <View
+            android:id="@+id/view_contact_collect"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/holo_blue_dark" />
+
+        <ImageView
+            android:id="@+id/iv_contact_photo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            tools:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:id="@+id/tv_contact_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="96dp"
+            android:ellipsize="end"
+            android:maxLength="24"
+            android:singleLine="true"
+            android:textColor="#de000000"
+            android:textSize="16sp"
+            tools:text="Name" />
+    </FrameLayout>
+
+</LinearLayout>
