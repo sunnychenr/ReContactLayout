@@ -10,6 +10,7 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
 import com.example.recontactlayout.ApplicationEx;
+import com.example.recontactlayout.R;
 
 /**
  * Created by ChenR on 2017/11/6.
@@ -52,6 +53,37 @@ public class Utils {
         wm.getDefaultDisplay().getMetrics(metrics);
 
         return new int[]{metrics.widthPixels, metrics.heightPixels};
+    }
+
+    public static int getBackgroundColor(int position) {
+        int color = R.color.color_FFFF5604;
+        int i = position % 7;
+
+        switch (i) {
+            case 0:
+                color = R.color.color_FFFF5604;
+                break;
+            case 1:
+                color = R.color.color_FF0097A8;
+                break;
+            case 2:
+                color = R.color.color_FF6735BB;
+                break;
+            case 3:
+                color = R.color.color_FF009E54;
+                break;
+            case 4:
+                color = R.color.color_FFEC1761;
+                break;
+            case 5:
+                color = R.color.color_FF465EA1;
+                break;
+            case 6:
+                color = R.color.color_FF4E92CF;
+                break;
+        }
+
+        return color;
     }
 
 }

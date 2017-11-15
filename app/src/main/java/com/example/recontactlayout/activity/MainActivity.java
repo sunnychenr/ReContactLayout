@@ -8,17 +8,19 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
-import com.example.recontactlayout.databeans.ContactInfo;
-import com.example.recontactlayout.adapter.ContactsAdapter;
 import com.example.recontactlayout.R;
+import com.example.recontactlayout.adapter.ContactsAdapter;
+import com.example.recontactlayout.databeans.ContactInfo;
+import com.example.recontactlayout.utils.PreferencesManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +37,18 @@ public class MainActivity extends Activity {
     RecyclerView rvContacts;
     @BindView(R.id.pb_loading)
     ProgressBar pbLoading;
+    @BindView(R.id.tv_enter_search)
+    TextView tvEnterSearch;
 
     private List<ContactInfo> mContactModel = new ArrayList<>();
     private ContactsAdapter mContactAdapter;
 
+    private LinearLayoutManager mLinearLayoutManager;
+    private GridLayoutManager mGridLayoutManager;
+
     private Thread mQueryContacts = null;
+
+    private boolean isListLayout;
 
     private Handler mhandler = new Handler() {
 
@@ -58,11 +67,24 @@ public class MainActivity extends Activity {
 
         mContactAdapter = new ContactsAdapter(mContactModel, this);
         rvContacts.setAdapter(mContactAdapter);
-        rvContacts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvContacts.setItemAnimator(new DefaultItemAnimator());
-        rvContacts.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        isListLayout = PreferencesManager.getInstance().getContactsLayoutType();
+
+        mLinearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mGridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+        setContactLayout();
 
         initData();
+    }
+
+    private void setContactLayout() {
+        if (isListLayout) {
+            rvContacts.setLayoutManager(mLinearLayoutManager);
+        } else {
+            rvContacts.setLayoutManager(mGridLayoutManager);
+        }
+        mContactAdapter.setListLayout(isListLayout);
     }
 
     private void initData() {
@@ -82,9 +104,20 @@ public class MainActivity extends Activity {
         }
     }
 
-    @OnClick(R.id.btn)
-    public void onViewClicked() {
+    @OnClick({R.id.tv_enter_search, R.id.btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.tv_enter_search:{
 
+            }
+            break;
+            case R.id.btn:{
+                isListLayout = !isListLayout;
+                setContactLayout();
+                PreferencesManager.getInstance().setContactsLayoutType(isListLayout);
+            }
+            break;
+        }
     }
 
     private class ReadContactsRunn implements Runnable {
@@ -104,7 +137,7 @@ public class MainActivity extends Activity {
 
             mEmptyContacts.clear();
 
-            String [] projection = new String[] {
+            String[] projection = new String[]{
                     ContactsContract.Contacts._ID,
                     ContactsContract.Contacts.DISPLAY_NAME,
                     ContactsContract.Contacts.LOOKUP_KEY,

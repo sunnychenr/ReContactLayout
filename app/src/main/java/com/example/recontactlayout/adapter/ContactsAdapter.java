@@ -21,9 +21,13 @@ import java.util.List;
  */
 
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ContactHolder> {
+    private final int CONTACT_LAYOUT_GRID = 0x0001;
+    private final int CONTACT_LAYOUT_LIST = 0x0002;
 
     private List<ContactInfo> model = null;
     private Context mContext;
+
+    private boolean isListLayout;
 
     public ContactsAdapter(List<ContactInfo> model, Context context) {
         this.model = model;
@@ -31,8 +35,21 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
     }
 
     @Override
+    public int getItemViewType(int position) {
+//        return super.getItemViewType(position);
+        return isListLayout ? CONTACT_LAYOUT_LIST : CONTACT_LAYOUT_GRID;
+    }
+
+    @Override
     public ContactHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View root = View.inflate(mContext, R.layout.item_list_contact, null);
+        View root = null;
+        int itemType = getItemViewType(0x0000);
+        if (itemType == CONTACT_LAYOUT_GRID) {
+            root = View.inflate(mContext, R.layout.item_grid_contact, null);
+        } else {
+            root = View.inflate(mContext, R.layout.item_list_contact, null);
+        }
+
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         root.setLayoutParams(params);
         return new ContactHolder(root);
@@ -47,11 +64,18 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
                 holder.photo.setImageBitmap(photo);
             } else {
                 holder.photo.setImageResource(R.mipmap.ic_launcher);
+
             }
+
+            holder.itemView.setBackgroundResource(Utils.getBackgroundColor(position));
 
             String name = info.getName();
             holder.name.setText(name);
         }
+    }
+
+    public void setListLayout(boolean listLayout) {
+        isListLayout = listLayout;
     }
 
     @Override
@@ -60,7 +84,6 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
     }
 
     class ContactHolder extends RecyclerView.ViewHolder {
-
         private TextView name;
         private ImageView photo;
 
