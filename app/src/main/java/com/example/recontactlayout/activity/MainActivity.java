@@ -1,12 +1,17 @@
 package com.example.recontactlayout.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -120,6 +125,11 @@ public class MainActivity extends Activity {
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+    }
+
     private class ReadContactsRunn implements Runnable {
 
         private ContentResolver mContentResolver;
@@ -132,21 +142,30 @@ public class MainActivity extends Activity {
 
         @Override
         public void run() {
-
             if (mEmptyContacts == null) return;
 
-            mEmptyContacts.clear();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ActivityCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(MainActivity.this, new String[] {Manifest.permission.READ_CONTACTS}, 1024);
+                return;
+            }
 
+            mEmptyContacts.clear();
             String[] projection = new String[]{
                     ContactsContract.Contacts._ID,
                     ContactsContract.Contacts.DISPLAY_NAME,
-                    ContactsContract.Contacts.LOOKUP_KEY,
                     ContactsContract.Contacts.SORT_KEY_PRIMARY,
+                    ContactsContract.Contacts.LOOKUP_KEY,
                     ContactsContract.Contacts.PHOTO_ID,
-                    ContactsContract.Contacts.PHOTO_URI,
+                    ContactsContract.Contacts.PHOTO_URI
             };
-
-            Cursor mContactsCursor = mContentResolver.query(ContactsContract.Contacts.CONTENT_URI, projection, null, null, null);
+            Cursor mContactsCursor = mContentResolver.query(
+                    ContactsContract.Contacts.CONTENT_URI,
+                    projection,
+//                    null,
+                    null,
+                    null,
+                    ContactsContract.Contacts.SORT_KEY_PRIMARY);
 
             if (mContactsCursor != null && mContactsCursor.getCount() > 0) {
                 while (mContactsCursor.moveToNext()) {
@@ -154,16 +173,16 @@ public class MainActivity extends Activity {
                     int idIndex = getColumnIndex(mContactsCursor, ContactsContract.Contacts._ID);
                     int nameIndex = getColumnIndex(mContactsCursor, ContactsContract.Contacts.DISPLAY_NAME);
                     int lookupKeyIndex = getColumnIndex(mContactsCursor, ContactsContract.Contacts.LOOKUP_KEY);
-                    int sortKeyIndex = getColumnIndex(mContactsCursor, ContactsContract.Contacts.SORT_KEY_PRIMARY);
                     int photoIdIndex = getColumnIndex(mContactsCursor, ContactsContract.Contacts.PHOTO_ID);
                     int photoUriIndex = getColumnIndex(mContactsCursor, ContactsContract.Contacts.PHOTO_URI);
+                    int sortKeyIndex = getColumnIndex(mContactsCursor, ContactsContract.Contacts.SORT_KEY_PRIMARY);
 
                     long id = mContactsCursor.getLong(idIndex);
                     String name = mContactsCursor.getString(nameIndex);
                     String lookupKey = mContactsCursor.getString(lookupKeyIndex);
-                    String sortKey = mContactsCursor.getString(sortKeyIndex);
                     String photoId = mContactsCursor.getString(photoIdIndex);
                     String photoUri = mContactsCursor.getString(photoUriIndex);
+                    String sortKey = mContactsCursor.getString(sortKeyIndex);
 
                     ContactInfo info = new ContactInfo();
                     info.setId(id);

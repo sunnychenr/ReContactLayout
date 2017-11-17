@@ -34,7 +34,7 @@ public class ContactInfo {
     }
 
     public void setSortKey(String sortKey) {
-        this.sort_key = sort_key;
+        this.sort_key = sortKey;
     }
 
     public String getPhotoUri() {
